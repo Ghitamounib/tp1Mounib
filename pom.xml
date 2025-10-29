@@ -5,9 +5,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>ma.emsi.mounib</groupId>
-    <artifactId>tp1Mounib</artifactId>
+    <artifactId>tp0mounib</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>tp1Mounib</name>
+    <name>tp0 mounib</name>
     <packaging>war</packaging>
 
     <properties>
@@ -35,6 +35,12 @@
             <artifactId>junit-jupiter-engine</artifactId>
             <version>${junit.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.primefaces</groupId>
+            <artifactId>primefaces</artifactId>
+            <version>15.0.7</version>
+            <classifier>jakarta</classifier>
         </dependency>
     </dependencies>
 
