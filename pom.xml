@@ -5,9 +5,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>ma.emsi.mounib</groupId>
-    <artifactId>tp0mounib</artifactId>
+    <artifactId>tp1Mounib</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>tp0 mounib</name>
+    <name>tp1Mounib</name>
     <packaging>war</packaging>
 
     <properties>
