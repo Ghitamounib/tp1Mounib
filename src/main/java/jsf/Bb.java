@@ -11,6 +11,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import llm.JsonUtilPourGemini;
+import llm.LlmInteraction;
 
 /**
  * Backing bean pour la page JSF index.xhtml.
@@ -52,11 +54,15 @@ public class Bb implements Serializable {
      */
     private StringBuilder conversation = new StringBuilder();
 
+    // Ajout de la variable d’instance debug
+    private boolean debug = false;
     /**
      * Contexte JSF. Utilisé pour qu'un message d'erreur s'affiche dans le formulaire.
      */
     @Inject
     private FacesContext facesContext;
+    @Inject
+    private JsonUtilPourGemini jsonUtil;
 
     /**
      * Obligatoire pour un bean CDI (classe gérée par CDI), s'il y a un autre constructeur.
@@ -105,6 +111,29 @@ public class Bb implements Serializable {
         this.conversation = new StringBuilder(conversation);
     }
 
+    // Getter/Setter pour debug
+    public boolean isDebug() {
+        return debug;
+    }
+    public void setDebug(boolean debug) {
+        this.debug = debug;
+    }
+    // Méthode demandée
+    public void toggleDebug() {
+        this.setDebug(!isDebug());
+    }
+    // Zone debug pour afficher JSON
+    private String texteRequeteJson;
+    private String texteReponseJson;
+    public String getTexteRequeteJson() {
+        return texteRequeteJson;
+    }
+
+    public String getTexteReponseJson() {
+        return texteReponseJson;
+    }
+
+
     /**
      * Envoie la question au serveur.
      * En attendant de l'envoyer à un LLM, le serveur fait un traitement quelconque, juste pour tester :
@@ -121,21 +150,39 @@ public class Bb implements Serializable {
             return null;
         }
 
-        // ✅ Nettoyer la question avant de compter les mots (enlever ponctuation)
-        String propre = question.replaceAll("[^\\p{L}\\p{Nd}\\s]", ""); // garde lettres, chiffres, espaces
-        int nbMots = propre.trim().isEmpty() ? 0 : propre.trim().split("\\s+").length;
+        try {
+            // 👉 Si c’est la première question, on envoie le rôle système à JsonUtil
+            if (this.conversation.isEmpty()) {
+                jsonUtil.setSystemRole(this.roleSysteme);
+            }
 
-        this.reponse = "Ta question contient " + nbMots + " mots.";
+            // 👉 Envoi de la question à l’API Gemini via JsonUtilPourGemini
+            LlmInteraction interaction = jsonUtil.envoyerRequete(question);
 
-        // Si c'est la première question, ajouter le rôle système au début
-        if (this.conversation.isEmpty()) {
-            this.reponse = roleSysteme.toUpperCase(Locale.FRENCH) + "\n" + this.reponse;
-            this.roleSystemeChangeable = false;
+            // 👉 Récupération du texte de réponse
+            this.reponse = interaction.reponseTexte();
+            this.texteRequeteJson = interaction.questionJson();
+            this.texteReponseJson = interaction.reponseJson();
+
+            // 👉 Si c’est la première réponse, on ajoute le rôle système en haut
+            if (this.conversation.isEmpty()) {
+                this.reponse = roleSysteme.toUpperCase(Locale.FRENCH) + "\n" + this.reponse;
+                this.roleSystemeChangeable = false;
+            }
+
+            // 👉 Ajout à la conversation
+            afficherConversation();
+
+        } catch (Exception e) {
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    "Problème de connexion avec l'API du LLM",
+                    "Problème de connexion avec l'API du LLM : " + e.getMessage());
+            facesContext.addMessage(null, message);
         }
 
-        afficherConversation();
         return null;
     }
+
 
 
 
