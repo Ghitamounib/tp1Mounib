@@ -159,6 +159,7 @@ public class JsonUtilPourGemini implements Serializable {
      * @param nouvelleQuestion question posée par l'utilsateur.
      * @return le texte du document JSON de la requête.
      */
+
     private String ajouteQuestionDansJsonRequete(String nouvelleQuestion) {
         // Crée le nouveau JsonObject qui correspond à la nouvelle question
         JsonObject nouveauMessageJson = Json.createObjectBuilder()
