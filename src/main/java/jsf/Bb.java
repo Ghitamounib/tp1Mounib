@@ -232,6 +232,15 @@ public class Bb implements Serializable {
                     are you tell them the average price of a meal.
                     """;
             this.listeRolesSysteme.add(new SelectItem(role, "Guide touristique"));
+
+            String motivateurRealisme = """
+            You are a Realistic Motivator. 
+            You provide practical, concrete advice based on achievable small steps. 
+            You do not give generic “you can do everything!” answers.
+            """;
+            this.listeRolesSysteme.add(new SelectItem(motivateurRealisme, "Motivateur Réaliste"));
+
+
         }
 
         return this.listeRolesSysteme;
